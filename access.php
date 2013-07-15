@@ -3,7 +3,7 @@
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
 Description: Control member access via a custom taxonomy that accepts roles, capabilities, or user IDs.
-Version: 0.1.0
+Version: 0.2.0
 Author: Ryan Van Etten
 Author URI: http://ryanve.com
 License: MIT
@@ -38,35 +38,46 @@ add_action('init', function() {
         ))
     ));
 
+    # Accommodate late post types.
     add_action('init', function() use ($tax, &$types, &$avoid) {
-         // Accommodate late post types.
         if (taxonomy_exists($tax))
             foreach (array_diff(get_post_types(), $types, $avoid) as $type)
                 register_taxonomy_for_object_type($tax, $type);
         unset($types, $avoid);
     }, 100);
     
-    is_admin() or add_action('wp', function() use ($tax) {
-        // Grant when not applicable, when no terms are applied, or when *any* term passes.
-        $applicable = taxonomy_exists($tax) && !is_404();
-        $user = wp_get_current_user();
-        array_reduce(array('post_class', 'body_class'), function($check, $hook) {
-            add_filter($hook, $check);
-            return $check;
-        }, function($list) use ($applicable, $user, $tax) {
+    # Define the "test access" callback via filter to enable override.
+    add_filter("@$tax:test", function($fn, $user = null) use ($tax) {
+        # Callback result grants (truthy) or denies (falsey) access. 
+        # Grant when not applicable, when no terms are applied, or when *any* term passes.
+        $applicable = taxonomy_exists($tax) && !is_404() and $user = $user ?: wp_get_current_user();
+        return $applicable ? function($post = null) use ($tax, $user) {
             $grant = 1;
-            if ($applicable and $terms = get_the_terms(null, $tax))
-                if (is_array($terms) and $grant--)
-                    foreach (wp_list_pluck($terms, 'slug') as $slug)
-                        if ($grant = is_numeric($slug) ? $user->id === $slug : $user->has_cap($slug))
-                            break;
-            $list = (array) ($list ?: array());
-            $class = array('access-granted', 'access-denied');
-            $list[] = $grant ? array_shift($class) : array_pop($class);
-            $list = array_diff(array_unique($list), $class);
+            $terms = get_the_terms($post, $tax);
+            if ($terms && is_array($terms) and $grant--)
+                foreach (wp_list_pluck($terms, 'slug') as $slug)
+                    if ($grant = is_numeric($slug) ? $user->id === $slug : $user->has_cap($slug))
+                        break;
+            return !!$grant;
+        } : '__return_true';
+    }, 0, 2);
+    
+    # Define the "contextual CSS" callback via filter to enable override.
+    add_filter("@$tax:contextualize", function($fn) use ($tax) {
+        return function($classes) use ($tax) {
+            $classes = (array) ($classes ?: array());
+            $grant = call_user_func(apply_filters("@$tax:test", null));
+            $which = array('access-granted', 'access-denied');
+            $classes[] = $grant ? array_shift($which) : array_pop($which);
             do_action("@$tax:" . ($grant ? 'granted' : 'denied') . '@' . current_filter());
-            return $list;
-        });
+            return array_diff(array_unique($classes), $which);
+        };
+    }, 0);
+    
+    is_admin() or add_action('wp', function() use ($tax) {
+        if ($contextualize = apply_filters("@$tax:contextualize", null))
+            foreach (array('post_class', 'body_class') as $hook)
+                add_filter($hook, $contextualize);
     });
 }, 1);
 
