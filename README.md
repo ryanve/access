@@ -1,14 +1,23 @@
 # Access
 
-[Access](../../) is a WordPress plugin to control user access via taxonomy terms. This approach is simple to implement and allows posts to have multiple access terms. It works for all post types.
+[Access](../../) is a simple scalable WordPress plugin to control user access via the [taxonomy API](http://codex.wordpress.org/Taxonomies) and user [roles/capabilities](http://codex.wordpress.org/Roles_and_Capabilities)/IDs.
 
 ## Usage
 
 ### Setup
 
-Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>. Choose any <b>name</b> you want and set its <b>slug</b> to a [capability](http://codex.wordpress.org/Roles_and_Capabilities#Capabilities), [role](http://codex.wordpress.org/Roles_and_Capabilities#Roles), or user ID. 
+Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>. Choose any <b>name</b> and set its <b>slug</b> to a [role](http://codex.wordpress.org/Roles_and_Capabilities#Roles), [capability](http://codex.wordpress.org/Roles_and_Capabilities#Capabilities), or user ID. 
 
-<b>Example:</b> Create a term named `Members` with the slug `read`. Any post containing that term would require login to be viewed.
+#### Example Terms
+
+<table>
+    <tr><th scope="col">Name</th><th scope="col">Slug</th><th scope="col">Restricts By</th></tr>
+    <tr><td><kbd>Members</kbd></td><td><kbd>read</kbd></th><td>capability</td></tr>
+    <tr><td><kbd>Editors</kbd></td><td><kbd>editor</kbd></th><td>role</td></tr>
+    <tr><td><kbd>John Doe</kbd></td><td><kbd>47</kbd></th><td>user ID</td></tr>
+</table>
+
+Access terms can be added to any post type via <b>Edit</b> (or <b>Quick Edit</b>) similar to how categories are added. Posts with access terms are only seen by users logged in with sufficient capability.
 
 ### UX
 
@@ -19,7 +28,7 @@ Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>.
 
 #### Customization
 
-Hook `'@access:loop_start'` to display a [login form](http://codex.wordpress.org/Function_Reference/wp_login_form) and/or message to informs users that they can log in to access more content.
+Hook `'@access:loop_start'` to display a [login form](http://codex.wordpress.org/Function_Reference/wp_login_form) and/or message to inform users that they can log in to access more content.
 
 ##### Example Message
 
