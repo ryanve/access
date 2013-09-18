@@ -11,10 +11,26 @@ Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>.
 #### Example Terms
 
 <table>
-    <tr><th scope="col">Name</th><th scope="col">Slug</th><th scope="col">Restricts By</th></tr>
-    <tr><td><kbd>Members</kbd></td><td><kbd>read</kbd></th><td>capability</td></tr>
-    <tr><td><kbd>Editors</kbd></td><td><kbd>editor</kbd></th><td>role</td></tr>
-    <tr><td><kbd>John Doe</kbd></td><td><kbd>47</kbd></th><td>user ID</td></tr>
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Slug</th>
+        <th scope="col">Restricts By</th>
+    </tr>
+    <tr>
+        <td><kbd>Members</kbd></td>
+        <td><kbd>read</kbd></td>
+        <td>capability</td>
+    </tr>
+    <tr>
+        <td><kbd>Editors</kbd></td>
+        <td><kbd>editor</kbd></td>
+        <td>role</td>
+    </tr>
+    <tr>
+        <td><kbd>John Doe</kbd></td>
+        <td><kbd>47</kbd></td>
+        <td>user ID</td>
+    </tr>
 </table>
 
 Access terms can be added to any post type via <b>Edit</b> (or <b>Quick Edit</b>) similar to how categories are added. Posts with access terms are only seen by users logged in with sufficient capability.
