@@ -72,7 +72,7 @@ add_action('init', function() {
         $case = $cases[$denies ? (int) $query->posts : 2];
         $msg = apply_filters($hook, '', $query->posts, $denies);
         $msg = apply_filters("$hook:$case", $msg, $query->posts, $denies);
-        if ($msg = trim($msg)) echo "<div class='loop-$tax loop-$case'>$msg</div>\n\n";
+        if ($msg) echo "<div class='loop-$tax loop-$case'>$msg</div>\n\n";
     });
     
     # Define the "contextual CSS" callback via filter to enable override.
