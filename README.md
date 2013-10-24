@@ -52,9 +52,7 @@ Hook `'@access:loop_start'` to display a [login form](http://codex.wordpress.org
 add_filter('@access:loop_start', function($markup, $posts, $denies) {
     if (is_user_logged_in()) return;
     $url = admin_url();
-    $tab = \str_repeat(' ', 16);
-    $msg = "<a href='$url'>Login</a> to view additional content.";
-    return "\n$tab<div class='loop-access'>$msg</div>\n";
+    return "<a href='$url'>Login</a> to view additional content.";
 }, 10, 3);
 ```
 
@@ -63,9 +61,8 @@ add_filter('@access:loop_start', function($markup, $posts, $denies) {
 ```php
 add_filter('@access:loop_start', function($markup, $posts, $denies) {
     if (is_user_logged_in()) return;
-    $tab = \str_repeat(' ', 16);
     $form = "<h3>Login</h3>" . wp_login_form(array('echo' => 0));
-    return "\n$tab<div class='loop-access loop-login'>$form</div>\n";
+    return "<div class='loop-login'>$form</div>";
 }, 10, 3);
 ```
 
