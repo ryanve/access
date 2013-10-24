@@ -79,8 +79,8 @@ add_action('init', function() {
     add_filter("@$tax:contextualize", function($fn) use ($tax, $cases) {
         return function($classes) use ($tax, $cases) {
             $classes = (array) ($classes ?: array());
-            $grant = call_user_func(apply_filters("@$tax:test", null)) ? 2 : 0;
-            $case = $cases[$grant];
+            $grant = call_user_func(apply_filters("@$tax:test", null));
+            $case = $cases[$grant ? 2 : 0];
             $classes[] = "$tax-$case";
             do_action("@$tax:$case@" . current_filter());
             return array_diff(array_unique($classes), array_map(function($kase) use ($tax) {
