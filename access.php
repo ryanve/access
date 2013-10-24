@@ -1,9 +1,9 @@
-<?php 
+<?php
 /*
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
 Description: Control member access via a custom taxonomy that accepts roles, capabilities, or user IDs.
-Version: 0.3.0
+Version: 0.4.0
 Author: Ryan Van Etten
 Author URI: http://ryanve.com
 License: MIT
@@ -15,6 +15,7 @@ License: MIT
 add_action('init', function() {
     $tax = 'access';
     $name = __('Access');
+    $cases = array('denied', 'limited', 'granted');
     $avoid = array('nav_menu_item', 'revision');
     $types = array_diff(get_post_types(), $avoid);
     register_taxonomy($tax, $types, apply_filters("@$tax:ui", array(
@@ -62,24 +63,29 @@ add_action('init', function() {
         } : '__return_true';
     }, 0, 2);
     
-    add_action('loop_start', function(&$query) use ($tax) {
+    add_action('loop_start', function(&$query) use ($tax, $cases) {
         $test = apply_filters("@$tax:test", null);
         $denies = array();
+        $hook = "@$tax:loop_start";
         foreach ($query->posts as $i => $post)
             is_int($i) && call_user_func($test, $post) or $denies[] = array_splice($query->posts, $i, 1)[0];
-        if ($denies)
-            echo apply_filters("@$tax:loop_start", '', $query->posts, $denies);
+        $case = $cases[$denies ? (int) $query->posts : 2];
+        $msg = apply_filters($hook, '', $query->posts, $denies);
+        $msg = apply_filters("$hook:$case", $msg, $query->posts, $denies);
+        if ($msg = trim($msg)) echo "<div class='loop-$tax loop-$case'>$msg</div>\n\n";
     });
     
     # Define the "contextual CSS" callback via filter to enable override.
-    add_filter("@$tax:contextualize", function($fn) use ($tax) {
-        return function($classes) use ($tax) {
+    add_filter("@$tax:contextualize", function($fn) use ($tax, $cases) {
+        return function($classes) use ($tax, $cases) {
             $classes = (array) ($classes ?: array());
-            $grant = call_user_func(apply_filters("@$tax:test", null));
-            $which = array('access-granted', 'access-denied');
-            $classes[] = $grant ? array_shift($which) : array_pop($which);
-            do_action("@$tax:" . ($grant ? 'granted' : 'denied') . '@' . current_filter());
-            return array_diff(array_unique($classes), $which);
+            $grant = call_user_func(apply_filters("@$tax:test", null)) ? 2 : 0;
+            $case = $cases[$grant];
+            $classes[] = "$tax-$case";
+            do_action("@$tax:$case@" . current_filter());
+            return array_diff(array_unique($classes), array_map(function($kase) use ($tax) {
+               return "$tax-$kase";
+            }, array_diff($cases, array($case))));
         };
     }, 0);
     
