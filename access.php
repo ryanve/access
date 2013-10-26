@@ -2,7 +2,7 @@
 /*
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
-Description: Control content access via a taxonomy that accepts roles, capabilities, or user IDs.
+Description: Control content access via a taxonomy that accepts user IDs, roles, or capabilities.
 Version: 0.5.0
 Author: Ryan Van Etten
 Author URI: http://ryanve.com

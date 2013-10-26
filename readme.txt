@@ -7,7 +7,7 @@ Stable tag: trunk
 License: MIT
 License URI: http://en.wikipedia.org/wiki/MIT_License
 
-Control content access via a taxonomy that accepts roles, capabilities, or user IDs.
+Control content access via a taxonomy that accepts user IDs, roles, or capabilities.
 
 == Description ==
 
