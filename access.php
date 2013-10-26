@@ -9,9 +9,6 @@ Author URI: http://ryanve.com
 License: MIT
 */
 
-# codex.wordpress.org/Roles_and_Capabilities
-# codex.wordpress.org/Plugin_API/Action_Reference
-
 add_action('init', function() {
     $tax = 'access';
     $name = __('Access');
@@ -94,5 +91,3 @@ add_action('init', function() {
                 add_filter($hook, $contextualize);
     });
 }, 1);
-
-#end
