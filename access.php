@@ -3,7 +3,7 @@
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
 Description: Control member access via a custom taxonomy that accepts roles, capabilities, or user IDs.
-Version: 0.4.0
+Version: 0.4.1
 Author: Ryan Van Etten
 Author URI: http://ryanve.com
 License: MIT
@@ -77,15 +77,14 @@ add_action('init', function() {
     
     # Define the "contextual CSS" callback via filter to enable override.
     add_filter("@$tax:contextualize", function($fn) use ($tax, $cases) {
-        return function($classes) use ($tax, $cases) {
-            $classes = (array) ($classes ?: array());
-            $grant = call_user_func(apply_filters("@$tax:test", null));
-            $case = $cases[$grant ? 2 : 0];
-            $classes[] = "$tax-$case";
+        $all = array_map(function($c) use ($tax) { return "$tax-$c"; }, $cases);
+        return function($classes) use ($tax, $cases, $all) {
+            $classes = $classes ? array_diff((array) $classes, $all) : array();
+            $grant = call_user_func(apply_filters("@$tax:test", null)) ? 2 : 0;
+            $case = $cases[$grant];
+            $classes[] = $all[$grant];
             do_action("@$tax:$case@" . current_filter());
-            return array_diff(array_unique($classes), array_map(function($kase) use ($tax) {
-               return "$tax-$kase";
-            }, array_diff($cases, array($case))));
+            return $classes;
         };
     }, 0);
     
