@@ -63,11 +63,11 @@ add_action('init', function() {
     add_action('loop_start', function(&$query) use ($tax, $cases) {
         $test = apply_filters("@$tax:test", null);
         $denies = array();
-        $hold = 'message';
-        $hook = "@$tax:$hold";
         foreach ($query->posts as $i => $post)
             is_int($i) && call_user_func($test, $post) or $denies[] = array_splice($query->posts, $i, 1)[0];
         $case = $cases[$denies ? $query->posts ? 1 : 0 : 2];
+        $hold = 'message';
+        $hook = "@$tax:$hold";
         $msg = apply_filters($hook, '', $query->posts, $denies);
         $msg = apply_filters("$hook:$case", $msg, $query->posts, $denies);
         if ($msg) echo "<div class='loop-$tax $tax-$hold $hold-$case'>$msg</div>\n\n";
