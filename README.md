@@ -1,10 +1,8 @@
-# Access
+# [Access](../../)
 
-[Access](../../) is a simple scalable WordPress plugin to control user access via the [taxonomy API](http://codex.wordpress.org/Taxonomies) and user [roles/capabilities](http://codex.wordpress.org/Roles_and_Capabilities)/IDs.
+#### <b>Access</b> is a simple scalable WordPress plugin to control user access via the [taxonomy API](http://codex.wordpress.org/Taxonomies) and user [roles/capabilities](http://codex.wordpress.org/Roles_and_Capabilities)/IDs.
 
 ## Usage
-
-### Setup
 
 Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>. Choose any <b>name</b> and set its <b>slug</b> to a [role](http://codex.wordpress.org/Roles_and_Capabilities#Roles), [capability](http://codex.wordpress.org/Roles_and_Capabilities#Capabilities), or user ID. 
 
@@ -33,23 +31,32 @@ Create access terms via <b>Posts</b> &rarr; <b>Access</b> &rarr; <b>Add New</b>.
     </tr>
 </table>
 
-Access terms can be added to any post type via <b>Edit</b> (or <b>Quick Edit</b>) similar to how categories are added. Posts with access terms are only seen by users logged in with sufficient capability.
+Access terms can be added to any post type via <b>Edit</b> (or <b>Quick Edit</b>) similar to how categories are added. Posts with access terms are only seen by users logged in with sufficient capability. Denied posts are excluded from the loop.
 
-### UX
+## UX
 
-#### Contexts
+### Contexts
 
 - Viewing an access-controlled <b>singular</b> item. (Its [permalink](http://en.wikipedia.org/wiki/Permalink).)
 - Viewing a <b>collection</b> that includes (all or some) access-controlled items. In this case only items that the current user has permission to view are displayed.
 
-#### Customization
+### Customization
 
-Hook `'@access:loop_start'` to display a [login form](http://codex.wordpress.org/Function_Reference/wp_login_form) and/or message to inform users that they can log in to access more content.
+Use a hook to display a [login form](http://codex.wordpress.org/Function_Reference/wp_login_form) and/or message to inform users that they can log in to access more content.
+
+#### Hooks
+
+##### Filter hooks during the `'loop_start'` action 
+
+- `'@access:message'` runs for all cases
+  - `'@access:message:granted'` runs if all posts are granted
+  - `'@access:message:limited'` runs if some posts are granted, and some denied
+  - `'@access:message:denied'` runs if all posts are denied
 
 ##### Example Message
 
 ```php
-add_filter('@access:loop_start', function($markup, $posts, $denies) {
+add_filter('@access:message', function($message, $grants, $denies) {
     if (is_user_logged_in()) return;
     $url = admin_url();
     return "<a href='$url'>Login</a> to view additional content.";
@@ -59,12 +66,16 @@ add_filter('@access:loop_start', function($markup, $posts, $denies) {
 ##### Example Login Form 
 
 ```php
-add_filter('@access:loop_start', function($markup, $posts, $denies) {
+add_filter('@access:message', function($message, $grants, $denies) {
     if (is_user_logged_in()) return;
     $form = "<h3>Login</h3>" . wp_login_form(array('echo' => 0));
     return "<div class='loop-login'>$form</div>";
 }, 10, 3);
 ```
+
+#### CSS
+
+For CSS purposes, messages are wrapped in a `div.access-message` with an applicable contextual class.
 
 ## Install
 
@@ -72,6 +83,10 @@ add_filter('@access:loop_start', function($markup, $posts, $denies) {
 
 1. Upload to the `/wp-content/plugins/` directory
 1. Activate through the Plugins menu in WordPress
+
+## Fund
+
+Fund development with [tips to @ryanve](https://www.gittip.com/ryanve/) =)
 
 ## License: [MIT](http://opensource.org/licenses/MIT)
 

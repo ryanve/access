@@ -3,7 +3,7 @@
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
 Description: Control content access via a custom taxonomy that accepts roles, capabilities, or user IDs.
-Version: 0.4.1
+Version: 0.5.0
 Author: Ryan Van Etten
 Author URI: http://ryanve.com
 License: MIT
@@ -63,13 +63,14 @@ add_action('init', function() {
     add_action('loop_start', function(&$query) use ($tax, $cases) {
         $test = apply_filters("@$tax:test", null);
         $denies = array();
-        $hook = "@$tax:loop_start";
+        $hold = 'message';
+        $hook = "@$tax:$hold";
         foreach ($query->posts as $i => $post)
             is_int($i) && call_user_func($test, $post) or $denies[] = array_splice($query->posts, $i, 1)[0];
         $case = $cases[$denies ? $query->posts ? 1 : 0 : 2];
         $msg = apply_filters($hook, '', $query->posts, $denies);
         $msg = apply_filters("$hook:$case", $msg, $query->posts, $denies);
-        if ($msg) echo "<div class='loop-$tax loop-$case'>$msg</div>\n\n";
+        if ($msg) echo "<div class='loop-$tax $tax-$hold $hold-$case'>$msg</div>\n\n";
     });
     
     # Define the "contextual CSS" callback via filter to enable override.
