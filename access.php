@@ -3,7 +3,7 @@
 Plugin Name: Access
 Plugin URI: http://github.com/ryanve/access
 Description: Control content access via a taxonomy that accepts user IDs, roles, or capabilities.
-Version: 0.5.0
+Version: 0.5.1
 Author: Ryan Van Etten
 Author URI: http://ryanve.com
 License: MIT
@@ -69,6 +69,8 @@ add_action('init', function() {
         $hold = 'message';
         $hook = "@$tax:$hold";
         $msg = apply_filters($hook, '', $query->posts, $denies);
+        foreach (array_diff($cases, array($case)) as $not)
+            $msg = apply_filters("$hook:!$not", $msg, $query->posts, $denies);
         $msg = apply_filters("$hook:$case", $msg, $query->posts, $denies);
         if ($msg) echo "<div class='loop-$tax $tax-$hold $hold-$case'>$msg</div>\n\n";
     });

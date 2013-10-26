@@ -49,9 +49,12 @@ Use a hook to display a [login form](http://codex.wordpress.org/Function_Referen
 ##### Filter hooks during the `'loop_start'` action 
 
 - `'@access:message'` runs for all cases
-  - `'@access:message:granted'` runs if all posts are granted
-  - `'@access:message:limited'` runs if some posts are granted, and some denied
+  - `'@access:message:!denied'` runs if all posts are <b>not</b> denied
+  - `'@access:message:!limited'` runs if posts are all granted <b>or</b> all denied
+  - `'@access:message:!granted'` runs if all posts are <b>not</b> granted
   - `'@access:message:denied'` runs if all posts are denied
+  - `'@access:message:limited'` runs if some posts are granted, some denied
+  - `'@access:message:granted'` runs if all posts are granted
 
 ##### Example Message
 
