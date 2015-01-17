@@ -54,7 +54,7 @@ add_action('init', function() {
             $terms = get_the_terms($post, $tax);
             if ($terms && is_array($terms) and $grant--)
                 foreach (wp_list_pluck($terms, 'slug') as $slug)
-                    if ($grant = is_numeric($slug) ? $user->id === $slug : $user->has_cap($slug))
+                    if ($grant = is_numeric($slug) ? $user->ID === $slug : $user->has_cap($slug))
                         break;
             return !!$grant;
         } : '__return_true';
